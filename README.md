@@ -1,6 +1,6 @@
 # mastermind
 
-A new Flutter project.
+A game of mastermind against the computer utilizing a number of different algorithms
 
 ## Getting Started
 
