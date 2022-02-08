@@ -61,6 +61,7 @@ def is_won(correctness: typing.List[str]) -> bool:
     :param correctness: A list that can either contain
     :return: True if correctness contains 4 correct orders, false if not.
     """
+    # all() returns True if every item in an iterable returns True, or if the iterable is empty.
     return all(item == 'CORRECT_ORDER' for item in correctness)
 
 
@@ -74,9 +75,13 @@ def take_code(message: str, code_length: int) -> Code:
     code: typing.List[str]
     colour: str
 
+    # This loop will continue until KeyboardInterrupt is thrown or a correct code has been entered.
     while True:
+        # Here input is taken from the user. The string is then made uppercase, whitespaces are removed, and it is split
+        # by the delimiter ','.
         code = input(message).upper().replace(' ', '').split(',')
         if len(code) == code_length:
+            # all() will evaluate to True if every colour in the input code is inside the COLOUR constant.
             if all((colour in COLOURS) for colour in code):
                 return tuple(code)
 
