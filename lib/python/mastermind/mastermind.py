@@ -1,3 +1,13 @@
+"""
+# ----------------------------------------------------------------------------------------------------------------------
+#  SPDX-License-Identifier: BSD 3-Clause                                                                               -
+#  Copyright (c) 2022 Jimmy Bierenbroodspot.                                                                           -
+# ----------------------------------------------------------------------------------------------------------------------
+
+A game of mastermind designed to be as modular as possible. If this module is directly executed you can play a
+rudimentary game of mastermind in the terminal. You can enter your combination using comma-separated colour names. This
+way is clunky and low-effort since this is not the intended UI.
+"""
 import typing
 import random
 import collections
