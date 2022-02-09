@@ -1,7 +1,8 @@
 import typing
 import random
+import collections
 
-Code: typing.Union[typing.Tuple[str, str, str, str], typing.Tuple[str, ...]] = typing.TypeVar('Code')
+Code: typing.Tuple[str, ...] = typing.TypeVar('Code')
 COLOURS: typing.Tuple[str, ...] = (
     'RED', 'GREEN', 'BLUE', 'YELLOW',
     'BROWN', 'ORANGE', 'WHITE', 'BLACK',
@@ -27,34 +28,38 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
     :return: A list that shows how many colors are in the right position, wrong position and how many of which both are
     wrong.
     """
-    correct_order: typing.List[str]  # Correct colour and correct order
-    incorrect_order: typing.List[str]  # Correct colour and wrong order
-    combined_lists: typing.List[str]
-    index: str
-    colour: str
-
+    # Used to store the amount of colours in correct order to account for these also getting flagged as incorrect order.
+    correct_pairs: int
+    correctness: typing.List[str] = []
+    # Counter here is used to create a dictionary-like object with the frequency of every colour.
+    colour_dict_list: typing.List[typing.Counter[str, int]] = [
+        collections.Counter(secret),
+        collections.Counter(to_compare),
+    ]
     # Enumerate() creates <class 'enumerate'> type object which consists of index, value tuple pairs for each item in an
     # iterable. Here I create two enumerate objects and compare them against each other. If there is a match it means
     # both the colour and the index, thus position, are the same which means a colour is in the right position.
-    correct_order = [
-        'CORRECT_ORDER' for (index, colour) in enumerate(secret) if (index, colour) in enumerate(to_compare)
-    ]
-    # Here secret and to_compare are compared to each other and adds 'INCORRECT_ORDER' to the list for every match. This
-    # ignores positions, but we can assume that for every correct order there is exactly one incorrect order. So after
-    # the comprehension we slice the list to its length minus the length of correct_order.
-    incorrect_order = [
-        'INCORRECT_ORDER' for colour in to_compare if colour in secret
-    ][:-len(correct_order)]
-    combined_lists = correct_order + incorrect_order
+    for index, colour in enumerate(secret):
+        if (index, colour) in enumerate(to_compare):
+            correctness.append('CORRECT_ORDER')
+    # Fun fact! Since __len__ simply returns a stored value the time complexity of len() is O(1).
+    correct_pairs = len(correctness)
+
+    for colour in colour_dict_list[0]:
+        if colour in colour_dict_list[1]:
+            correctness.extend(['INCORRECT_ORDER'] * min(colour_dict_list[0][colour], colour_dict_list[1][colour]))
+
+    # Since we know that an equal amount of correct pairs are marked as incorrect order
+    correctness = correctness[:-correct_pairs]
 
     # If the list is smaller than 4 the combined list is topped off with wrongs.
-    if len(combined_lists) < code_length:
-        for _ in range(code_length - len(combined_lists)):
-            combined_lists.append('WRONG')
+    if len(correctness) < code_length:
+        for _ in range(code_length - len(correctness)):
+            correctness.append('WRONG')
+    return correctness
 
-    return combined_lists
 
-
+# All bools start with is, right?
 def is_won(correctness: typing.List[str]) -> bool:
     """Checks if a list contains all correct orders.
 
@@ -97,19 +102,19 @@ def game(game_length: int = 10, board_width: int = 4) -> bool:
     guess: Code
     correctness: typing.List[str]
     secret_code: Code = generate_secret_code(board_width)
-    # print('DEBUG:', secret_code)
 
     for _ in range(game_length):
-        guess = take_code('Choose colour.\n>>\t', board_width)
+        guess = take_code('Choose colours.\n>>\t', board_width)
         correctness = compare_codes(secret_code, guess, board_width)
         if is_won(correctness):
-            return True
-        print(correctness)
-    return False
+            yield f'{correctness}\nWon'
+        yield f'{correctness}'
+    yield 'Lost'
 
 
 def main() -> None:
-    print(game())
+    for game_round in game():
+        print(game_round)
 
 
 if __name__ == "__main__":
