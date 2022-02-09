@@ -82,10 +82,9 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
     if len(correctness) != 0:
         correctness = correctness[:-correct_pairs]
 
-    # If the list is smaller than 4 the combined list is topped off with wrongs.
-    if len(correctness) < code_length:
-        for _ in range(code_length - len(correctness)):
-            correctness.append('WRONG')
+    # If the list is smaller than board with the combined list is topped off with wrongs.
+    correctness.extend(['WRONG'] * (code_length - len(correctness)))
+    print(correctness)
     return correctness
 
 
