@@ -58,10 +58,11 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
     correct_pairs: int
     correctness: typing.List[str] = []
     # Counter here is used to create a dictionary-like object with the frequency of every colour.
-    colour_dict_list: typing.List[typing.Counter[str, int]] = [
+    frequencies: typing.List[typing.Counter] = [
         collections.Counter(secret),
         collections.Counter(to_compare),
     ]
+
     # Enumerate() creates <class 'enumerate'> type object which consists of index, value tuple pairs for each item in an
     # iterable. Here I create two enumerate objects and compare them against each other. If there is a match it means
     # both the colour and the index, thus position, are the same which means a colour is in the right position.
@@ -76,7 +77,8 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
             correctness.extend(['INCORRECT_ORDER'] * min(colour_dict_list[0][colour], colour_dict_list[1][colour]))
 
     # Since we know that an equal amount of correct pairs are marked as incorrect order
-    correctness = correctness[:-correct_pairs]
+    if len(correctness) != 0:
+        correctness = correctness[:-correct_pairs]
 
     # If the list is smaller than 4 the combined list is topped off with wrongs.
     if len(correctness) < code_length:
