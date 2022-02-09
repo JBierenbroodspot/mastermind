@@ -11,12 +11,28 @@ way is clunky and low-effort since this is not the intended UI.
 import typing
 import random
 import collections
+import sys
+import os
+import logging
 
 Code: typing.Tuple[str, ...] = typing.TypeVar('Code')
 COLOURS: typing.Tuple[str, ...] = (
     'RED', 'GREEN', 'BLUE', 'YELLOW',
     'BROWN', 'ORANGE', 'WHITE', 'BLACK',
 )
+
+# Set logging, logging location and logging format
+if 'debug' in sys.argv:
+    log_location: str = os.path.join(os.getcwd(), 'logs', 'mastermind-debug.log')
+    os.makedirs(os.path.dirname(log_location), exist_ok=True)
+    logging.basicConfig(
+        filename=log_location,
+        encoding='utf-8',
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        filemode='a+',
+    )
 
 
 def generate_secret_code(length: int) -> Code:
@@ -112,13 +128,21 @@ def game(game_length: int = 10, board_width: int = 4) -> typing.Generator[str, N
     guess: Code
     correctness: typing.List[str]
     secret_code: Code = generate_secret_code(board_width)
+    logging.debug(f'Secret code is:\t{secret_code}')
 
     for _ in range(game_length):
         guess = take_code('Choose colours.\n>>\t', board_width)
+        logging.debug(f'Guessed code is:\t{guess}')
+
         correctness = compare_codes(secret_code, guess, board_width)
+        logging.debug(f'Correctness for this round:\t{correctness}')
+
         if is_won(correctness):
+            logging.debug('Game is won')
             yield f'{correctness}\nWon'
+            return
         yield f'{correctness}'
+    logging.debug('Game is lost')
     yield 'Lost'
 
 
