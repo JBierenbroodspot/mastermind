@@ -91,7 +91,7 @@ def take_code(message: str, code_length: int) -> Code:
                 return tuple(code)
 
 
-def game(game_length: int = 10, board_width: int = 4) -> bool:
+def game(game_length: int = 10, board_width: int = 4) -> typing.Generator[str, None, None]:
     """A game of mastermind where you compare user input against a computer generated code where the correctness of this
     code will be shown after every round.
 
