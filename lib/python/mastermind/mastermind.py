@@ -79,7 +79,7 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
             correctness.extend(['INCORRECT_ORDER'] * min(frequencies[0][colour], frequencies[1][colour]))
     logging.debug(f'{frequencies}\t{correct_pairs}\t{correctness}')
     # Since we know that an equal amount of correct pairs are marked as incorrect order
-    if len(correctness) != 0:
+    if correct_pairs != 0:
         correctness = correctness[:-correct_pairs]
 
     # If the list is smaller than board with the combined list is topped off with wrongs.
