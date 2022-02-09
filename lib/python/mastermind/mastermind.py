@@ -72,10 +72,12 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
     # Fun fact! Since __len__ simply returns a stored value the time complexity of len() is O(1).
     correct_pairs = len(correctness)
 
-    for colour in colour_dict_list[0]:
-        if colour in colour_dict_list[1]:
-            correctness.extend(['INCORRECT_ORDER'] * min(colour_dict_list[0][colour], colour_dict_list[1][colour]))
-
+    # The frequencies are compared to each other and once a match is found INCORRECT_ORDER is added the lowest frequency
+    # amount of time.
+    for colour in frequencies[0]:
+        if colour in frequencies[1]:
+            correctness.extend(['INCORRECT_ORDER'] * min(frequencies[0][colour], frequencies[1][colour]))
+    logging.debug(f'{frequencies}\t{correct_pairs}\t{correctness}')
     # Since we know that an equal amount of correct pairs are marked as incorrect order
     if len(correctness) != 0:
         correctness = correctness[:-correct_pairs]
