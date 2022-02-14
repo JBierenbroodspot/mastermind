@@ -18,7 +18,7 @@ import argparse
 Code: typing.Union[typing.Tuple[int, ...], typing.List[str]] = typing.TypeVar('Code')
 
 
-def setup_logging() -> None:
+def _init_logging() -> None:
     """Initializes logging by configuring logging and setting the logging location.
 
     :return: None.
@@ -176,7 +176,7 @@ def main() -> None:
     arguments = _init_arguments()
 
     if arguments.debug:
-        setup_logging()
+        _init_logging()
 
     colours = tuple(number for number in range(arguments.colours))
     game_length = arguments.length
