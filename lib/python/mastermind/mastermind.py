@@ -11,15 +11,18 @@ way is clunky and low-effort since this is not the intended UI.
 import typing
 import random
 import collections
-import sys
 import os
 import logging
 import argparse
 
 Code: typing.Tuple[int, ...] = typing.TypeVar('Code')
 
-# Set logging, logging location and logging format
-if 'debug' in sys.argv:
+
+def setup_logging() -> None:
+    """Initializes logging by configuring logging and setting the logging location.
+
+    :return: None.
+    """
     log_location: str = os.path.join(os.getcwd(), 'logs', 'mastermind-debug.log')
     os.makedirs(os.path.dirname(log_location), exist_ok=True)
     logging.basicConfig(
@@ -158,7 +161,11 @@ def main() -> None:
     parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
     parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
     parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
+    parser.add_argument('--debug', help='Enable or disable debugging, default False', type=bool, default=False)
     arguments = parser.parse_args()
+
+    if arguments.debug:
+        setup_logging()
 
     colours = tuple(number for number in range(arguments.colours))
     game_length = arguments.length
