@@ -35,6 +35,18 @@ def setup_logging() -> None:
     )
 
 
+def setup_arguments() -> argparse.Namespace:
+    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+
+    # Setup argument parser
+    parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
+    parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
+    parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
+    parser.add_argument('--debug', help='Enable or disable debugging, default False', type=bool, default=False)
+
+    return parser.parse_args()
+
+
 def generate_secret_code(colours: typing.Tuple[int, ...], length: int) -> Code:
     """Creates a `Code` tuple with random colours taken from the colours.
 
@@ -116,9 +128,9 @@ def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: i
                 return code
 
 
-def game(colours: typing.Tuple[int, ...],
-         game_length: int,
-         board_width: int) -> typing.Generator[typing.Tuple[int, int, bool], None, None]:
+def simulate_game(colours: typing.Tuple[int, ...],
+                  game_length: int,
+                  board_width: int) -> typing.Generator[typing.Tuple[int, int, bool], Code, None]:
     """A game of mastermind where you compare user input against a computer generated code where the correctness of this
     code will be yielded after every round.
 
@@ -134,7 +146,8 @@ def game(colours: typing.Tuple[int, ...],
     logging.debug(f'Secret code is:\t{secret_code}')
 
     for _ in range(game_length):
-        guess = get_user_input(colours, 'Choose colours.\n>>\t', board_width)
+        guess = yield
+
         logging.debug(f'Guessed code is:\t{guess}')
 
         correctness = compare_codes(secret_code, guess)
@@ -147,7 +160,6 @@ def game(colours: typing.Tuple[int, ...],
             return
         yield *correctness, won
     logging.debug('Game is lost')
-    yield 0, 0, False
 
 
 def main() -> None:
@@ -172,8 +184,16 @@ def main() -> None:
     game_length = arguments.length
     game_width = arguments.width
 
-    for game_round in game(colours, game_length, game_width):
-        print(game_round)
+    # Simulate game
+    game = simulate_game(colours, game_length, game_width)
+    for _ in game:
+        game_round = game.send(get_user_input(colours, 'Choose colours.\n>>\t', game_width))
+        print(game_round[:2])
+
+    if game_round[2]:
+        print('Congratulations, you won!')
+    else:
+        print('You lost, better luck next time')
 
 
 if __name__ == "__main__":
