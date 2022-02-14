@@ -14,12 +14,9 @@ import collections
 import sys
 import os
 import logging
+import argparse
 
 Code: typing.Tuple[str, ...] = typing.TypeVar('Code')
-COLOURS: typing.Tuple[str, ...] = (
-    'RED', 'GREEN', 'BLUE', 'YELLOW',
-    'BROWN', 'ORANGE', 'WHITE', 'BLACK',
-)
 
 # Set logging, logging location and logging format
 if 'debug' in sys.argv:
@@ -35,13 +32,14 @@ if 'debug' in sys.argv:
     )
 
 
-def generate_secret_code(length: int) -> Code:
-    """Creates a `Code` tuple with random colours taken from the COLOURS constant.
+def generate_secret_code(colours: typing.Tuple[int, ...], length: int) -> Code:
+    """Creates a `Code` tuple with random colours taken from the colours.
 
+    :param colours: All possible colours to choose from.
     :param length: Length of generated code.
     :return: A tuple with 4 random colours.
     """
-    return tuple(random.choices(COLOURS, k=length))
+    return tuple(random.choices(colours, k=length))
 
 
 def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.List[str]:
@@ -50,7 +48,7 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
 
     :param secret: The secret code to compare against.
     :param to_compare: Input code to compare with.
-    :param code_length: Expected length of the codes.
+    :param code_length: Expected seq_length of the codes.
     :return: A list that shows how many colors are in the right position, wrong position and how many of which both are
     wrong.
     """
@@ -99,11 +97,12 @@ def is_won(correctness: typing.List[str]) -> bool:
     return all(item == 'CORRECT_ORDER' for item in correctness)
 
 
-def take_code(message: str, code_length: int) -> Code:
+def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -> Code:
     """Asks user to input a colour code.
 
+    :param colours: All possible colours to choose from.
     :param message: Message to display.
-    :param code_length: Expected length of the code.
+    :param code_length: Expected seq_length of the code.
     :return: A list containing a colour code.
     """
     code: typing.List[str]
@@ -116,29 +115,30 @@ def take_code(message: str, code_length: int) -> Code:
         code = input(message).upper().replace(' ', '').split(',')
         if len(code) == code_length:
             # all() will evaluate to True if every colour in the input code is inside the COLOUR constant.
-            if all((colour in COLOURS) for colour in code):
+            if all((colour in colours) for colour in code):
                 return tuple(code)
 
 
-def game(game_length: int = 10, board_width: int = 4) -> typing.Generator[str, None, None]:
+def game(colours: typing.Tuple[int, ...], game_length, board_width) -> typing.Generator[str, None, None]:
     """A game of mastermind where you compare user input against a computer generated code where the correctness of this
     code will be shown after every round.
 
+    :param colours: All possible colours to choose from.
     :param game_length: Amount of rounds.
     :param board_width: Width of the board.
     :return: True if won, False if user lost.
     """
     guess: Code
     correctness: typing.List[str]
-    secret_code: Code = generate_secret_code(board_width)
+    secret_code: Code = generate_secret_code(colours, board_width)
     logging.debug(f'Secret code is:\t{secret_code}')
 
     for _ in range(game_length):
-        guess = take_code('Choose colours.\n>>\t', board_width)
+        guess = take_code(colours, 'Choose colours.\n>>\t', board_width)
         logging.debug(f'Guessed code is:\t{guess}')
 
         correctness = compare_codes(secret_code, guess, board_width)
-        logging.debug(f'Correctness for this round:\t{correctness}')
+        logging.debug(colours, f'Correctness for this round:\t{correctness}')
 
         if is_won(correctness):
             logging.debug('Game is won')
@@ -150,7 +150,24 @@ def game(game_length: int = 10, board_width: int = 4) -> typing.Generator[str, N
 
 
 def main() -> None:
-    for game_round in game():
+    colours: typing.Tuple[int, ...]
+    arguments: argparse.Namespace
+    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    game_length: int
+    game_width: int
+    game_round: str
+
+    # Setup argument parser
+    parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
+    parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
+    parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
+    arguments = parser.parse_args()
+
+    colours = tuple(number for number in range(arguments.colours))
+    game_length = arguments.length
+    game_width = arguments.width
+
+    for game_round in game(colours, game_length, game_width):
         print(game_round)
 
 
