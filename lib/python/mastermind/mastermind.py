@@ -93,7 +93,7 @@ def is_won(correctness: typing.Tuple[int, int], board_width: int) -> bool:
     return correctness[0] == board_width
 
 
-def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -> Code:
+def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: int) -> Code:
     """Asks user to input a colour code.
 
     :param colours: All possible colours to choose from.
@@ -134,7 +134,7 @@ def game(colours: typing.Tuple[int, ...],
     logging.debug(f'Secret code is:\t{secret_code}')
 
     for _ in range(game_length):
-        guess = take_code(colours, 'Choose colours.\n>>\t', board_width)
+        guess = get_user_input(colours, 'Choose colours.\n>>\t', board_width)
         logging.debug(f'Guessed code is:\t{guess}')
 
         correctness = compare_codes(secret_code, guess)
