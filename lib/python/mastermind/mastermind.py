@@ -15,7 +15,7 @@ import os
 import logging
 import argparse
 
-Code: typing.Tuple[int, ...] = typing.TypeVar('Code')
+Code: typing.Union[typing.Tuple[int, ...], typing.List[str]] = typing.TypeVar('Code')
 
 
 def setup_logging() -> None:
@@ -117,8 +117,8 @@ def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -
 
 
 def game(colours: typing.Tuple[int, ...],
-         game_length,
-         board_width) -> typing.Generator[typing.Tuple[int, int, bool], None, None]:
+         game_length: int,
+         board_width: int) -> typing.Generator[typing.Tuple[int, int, bool], None, None]:
     """A game of mastermind where you compare user input against a computer generated code where the correctness of this
     code will be yielded after every round.
 
