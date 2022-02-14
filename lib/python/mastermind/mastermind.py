@@ -75,7 +75,7 @@ def compare_codes(secret: Code, to_compare: Code) -> typing.Tuple[int, int]:
     for colour in frequencies[0]:
         if colour in frequencies[1]:
             incorrect_order += min(frequencies[0][colour], frequencies[1][colour])
-    logging.debug(f'{frequencies}\t{incorrect_order}\t{correctness}')
+    logging.debug(f'{frequencies}\t{incorrect_order, incorrect_order}')
     # Since we know that an equal amount of correct pairs are marked as incorrect order
     incorrect_order -= correct_order
 
@@ -139,7 +139,7 @@ def game(colours: typing.Tuple[int, ...],
 
         correctness = compare_codes(secret_code, guess)
         won = is_won(correctness, board_width)
-        logging.debug(colours, f'Correctness for this round:\t{correctness}')
+        logging.debug(f'{colours}\tCorrectness for this round:\t{correctness}')
 
         if won:
             logging.debug('Game is won')
