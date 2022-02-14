@@ -14,6 +14,7 @@ import json
 import typing
 
 import lib.python.mastermind.mastermind as game
+import scripts.generate_set as generate_set
 
 # These constants are declared here because they remain the same value in the entire module since there is no way to
 # customize them yet
@@ -32,6 +33,9 @@ def main() -> None:
     answer: typing.Tuple[int, int, bool]
     game_round: int = 0
     possible_combinations: Json = get_combinations()
+
+    # Generate dataset with possible combinations
+    generate_set.main()
 
     game_simulation = game.simulate_game(COLOURS, GAME_LENGTH, GAME_WIDTH)
     for _ in game_simulation:
