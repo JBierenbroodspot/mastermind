@@ -101,18 +101,19 @@ def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -
     :param code_length: Expected seq_length of the code.
     :return: A list containing a colour code.
     """
-    code: typing.List[str]
+    code: Code
     colour: str
 
     # This loop will continue until KeyboardInterrupt is thrown or a correct code has been entered.
     while True:
         # Here input is taken from the user. The string is then made uppercase, whitespaces are removed, and it is split
-        # by the delimiter ','.
-        code = input(message).upper().replace(' ', '').split(',')
+        # by the delimiter ','. Then maps this list with int (mapping applies a function to every item in an iterable
+        # and in this case int is the function) which is converted to a tuple.
+        code = tuple(map(int, input(message).upper().replace(' ', '').split(',')))
         if len(code) == code_length:
-            # all() will evaluate to True if every colour in the input code is inside colour.
+            # all() will return True if everything within its parameter is also True.
             if all((colour in colours) for colour in code):
-                return tuple(code)
+                return code
 
 
 def game(colours: typing.Tuple[int, ...],
