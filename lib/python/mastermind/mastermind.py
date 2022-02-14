@@ -16,7 +16,7 @@ import os
 import logging
 import argparse
 
-Code: typing.Tuple[str, ...] = typing.TypeVar('Code')
+Code: typing.Tuple[int, ...] = typing.TypeVar('Code')
 
 # Set logging, logging location and logging format
 if 'debug' in sys.argv:
@@ -42,18 +42,17 @@ def generate_secret_code(colours: typing.Tuple[int, ...], length: int) -> Code:
     return tuple(random.choices(colours, k=length))
 
 
-def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.List[str]:
-    """Takes two tuples and returns whether a colour is in the right position and right colour, wrong position or right
-    colour or both wrong.
+def compare_codes(secret: Code, to_compare: Code) -> typing.Tuple[int, int]:
+    """Takes two tuples and returns whether a colour is the correct colour and in the correct position or incorrect
+     position but correct colour.
 
     :param secret: The secret code to compare against.
     :param to_compare: Input code to compare with.
-    :param code_length: Expected seq_length of the codes.
-    :return: A list that shows how many colors are in the right position, wrong position and how many of which both are
-    wrong.
+    :return: A tuple where the first index is correct order, correct position and the second is incorrect position but
+    correct colour.
     """
-    # Used to store the amount of colours in correct order to account for these also getting flagged as incorrect order.
-    correct_pairs: int
+    correct_order: int = 0
+    incorrect_order: int = 0
     correctness: typing.List[str] = []
     # Counter here is used to create a dictionary-like object with the frequency of every colour.
     frequencies: typing.List[typing.Counter] = [
@@ -66,35 +65,29 @@ def compare_codes(secret: Code, to_compare: Code, code_length: int) -> typing.Li
     # both the colour and the index, thus position, are the same which means a colour is in the right position.
     for index, colour in enumerate(secret):
         if (index, colour) in enumerate(to_compare):
-            correctness.append('CORRECT_ORDER')
-    # Fun fact! Since __len__ simply returns a stored value the time complexity of len() is O(1).
-    correct_pairs = len(correctness)
+            correct_order += 1
 
-    # The frequencies are compared to each other and once a match is found INCORRECT_ORDER is added the lowest frequency
-    # amount of time.
+    # The frequencies are compared to each other and once a match is found incorrect_order is incremented by the lowest
+    # frequency.
     for colour in frequencies[0]:
         if colour in frequencies[1]:
-            correctness.extend(['INCORRECT_ORDER'] * min(frequencies[0][colour], frequencies[1][colour]))
-    logging.debug(f'{frequencies}\t{correct_pairs}\t{correctness}')
+            incorrect_order += min(frequencies[0][colour], frequencies[1][colour])
+    logging.debug(f'{frequencies}\t{incorrect_order}\t{correctness}')
     # Since we know that an equal amount of correct pairs are marked as incorrect order
-    if correct_pairs != 0:
-        correctness = correctness[:-correct_pairs]
+    incorrect_order -= correct_order
 
-    # If the list is smaller than board with the combined list is topped off with wrongs.
-    correctness.extend(['WRONG'] * (code_length - len(correctness)))
-    print(correctness)
-    return correctness
+    return correct_order, incorrect_order
 
 
 # All bools start with is, right?
-def is_won(correctness: typing.List[str]) -> bool:
-    """Checks if a list contains all correct orders.
+def is_won(correctness: typing.Tuple[int, int], board_width: int) -> bool:
+    """Compares the left of correctness against the width of the board.
 
-    :param correctness: A list that can either contain
-    :return: True if correctness contains 4 correct orders, false if not.
+    :param correctness: A tuple that contains the amount of colours in the correct position on the first index.
+    :param board_width: Width of the board.
+    :return: True if the first index is the same as the board width.
     """
-    # all() returns True if every item in an iterable returns True, or if the iterable is empty.
-    return all(item == 'CORRECT_ORDER' for item in correctness)
+    return correctness[0] == board_width
 
 
 def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -> Code:
@@ -114,22 +107,25 @@ def take_code(colours: typing.Tuple[int, ...], message: str, code_length: int) -
         # by the delimiter ','.
         code = input(message).upper().replace(' ', '').split(',')
         if len(code) == code_length:
-            # all() will evaluate to True if every colour in the input code is inside the COLOUR constant.
+            # all() will evaluate to True if every colour in the input code is inside colour.
             if all((colour in colours) for colour in code):
                 return tuple(code)
 
 
-def game(colours: typing.Tuple[int, ...], game_length, board_width) -> typing.Generator[str, None, None]:
+def game(colours: typing.Tuple[int, ...],
+         game_length,
+         board_width) -> typing.Generator[typing.Tuple[int, int, bool], None, None]:
     """A game of mastermind where you compare user input against a computer generated code where the correctness of this
-    code will be shown after every round.
+    code will be yielded after every round.
 
     :param colours: All possible colours to choose from.
     :param game_length: Amount of rounds.
     :param board_width: Width of the board.
-    :return: True if won, False if user lost.
+    :return: The amount of correct positions, correct colour but incorrect position and whether the game is won or not.
     """
     guess: Code
-    correctness: typing.List[str]
+    won: bool
+    correctness: typing.Tuple[int, int]
     secret_code: Code = generate_secret_code(colours, board_width)
     logging.debug(f'Secret code is:\t{secret_code}')
 
@@ -137,16 +133,17 @@ def game(colours: typing.Tuple[int, ...], game_length, board_width) -> typing.Ge
         guess = take_code(colours, 'Choose colours.\n>>\t', board_width)
         logging.debug(f'Guessed code is:\t{guess}')
 
-        correctness = compare_codes(secret_code, guess, board_width)
+        correctness = compare_codes(secret_code, guess)
+        won = is_won(correctness, board_width)
         logging.debug(colours, f'Correctness for this round:\t{correctness}')
 
-        if is_won(correctness):
+        if won:
             logging.debug('Game is won')
-            yield f'{correctness}\nWon'
+            yield *correctness, won
             return
-        yield f'{correctness}'
+        yield *correctness, won
     logging.debug('Game is lost')
-    yield 'Lost'
+    yield 0, 0, False
 
 
 def main() -> None:
