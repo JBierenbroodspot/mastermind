@@ -35,10 +35,12 @@ def setup_logging() -> None:
     )
 
 
-def setup_arguments() -> argparse.Namespace:
-    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+def _init_arguments() -> argparse.Namespace:
+    """Initializes arguments
 
-    # Setup argument parser
+    :return: An argparse.Namespace object with all parsed arguments.
+    """
+    parser: argparse.ArgumentParser = argparse.ArgumentParser()
     parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
     parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
     parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
@@ -165,17 +167,13 @@ def simulate_game(colours: typing.Tuple[int, ...],
 def main() -> None:
     colours: typing.Tuple[int, ...]
     arguments: argparse.Namespace
-    parser: argparse.ArgumentParser = argparse.ArgumentParser()
     game_length: int
     game_width: int
-    game_round: str
+    game: typing.Generator[typing.Tuple[int, int, bool], Code, None]
+    won_game: bool
+    game_round: typing.Tuple[int, int, bool] = 0, 0, False
 
-    # Setup argument parser
-    parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
-    parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
-    parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
-    parser.add_argument('--debug', help='Enable or disable debugging, default False', type=bool, default=False)
-    arguments = parser.parse_args()
+    arguments = _init_arguments()
 
     if arguments.debug:
         setup_logging()
