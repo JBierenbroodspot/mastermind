@@ -15,7 +15,7 @@ import os
 import logging
 import argparse
 
-Code: typing.Union[typing.Tuple[int, ...], typing.List[str]] = typing.TypeVar('Code')
+Code: typing.Union[typing.Tuple[int, ...], typing.List[int]] = typing.TypeVar('Code')
 
 
 def _init_logging() -> None:
