@@ -34,9 +34,6 @@ def main() -> None:
     game_round: int = 0
     possible_combinations: Json = get_combinations()
 
-    # Generate dataset with possible combinations
-    generate_set.main()
-
     game_simulation = game.simulate_game(COLOURS, GAME_LENGTH, GAME_WIDTH)
     for _ in game_simulation:
         game_round += 1
@@ -61,6 +58,9 @@ def get_combinations() -> Json:
     """
     json_io: typing.TextIO
     json_string: str
+
+    # Generate dataset with possible combinations
+    generate_set.main()
 
     with open('./combinations.json', 'r') as json_io:
         json_string = json_io.read()
