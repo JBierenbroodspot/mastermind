@@ -10,21 +10,10 @@ Sterling, L., & Shapiro, E. (1994). The art of Prolog: advanced programming tech
 """
 from __future__ import annotations
 import random
-import json
 import typing
 
 import lib.python.mastermind.mastermind as game
-import scripts.generate_set as generate_set
-
-# These constants are declared here because they remain the same value in the entire module since there is no way to
-# customize them yet
-GAME_WIDTH: int = 4
-GAME_LENGTH: int = 8
-COLOURS: typing.Tuple[int, ...] = tuple(num for num in range(6))
-
-# Create generic Json type for ease of use, this has no actual functionality other than showing that something is a
-# json serialized object.
-Json: typing.Generic = typing.TypeVar('Json')
+import initialization as init
 
 
 def main() -> None:
@@ -32,9 +21,9 @@ def main() -> None:
     guess: game.Code
     answer: typing.Tuple[int, int, bool]
     game_round: int = 0
-    possible_combinations: Json = get_combinations()
+    possible_combinations: init.Json = init.get_combinations()
 
-    game_simulation = game.simulate_game(COLOURS, GAME_LENGTH, GAME_WIDTH)
+    game_simulation = game.simulate_game(init.COLOURS, init.GAME_LENGTH, init.GAME_WIDTH)
     for _ in game_simulation:
         game_round += 1
 
@@ -51,24 +40,7 @@ def main() -> None:
         print('Game lost.')
 
 
-def get_combinations() -> Json:
-    """Retrieves a list of all possible combinations from combinations.json.
-
-    :return: A Json serialized object with all possible combinations.
-    """
-    json_io: typing.TextIO
-    json_string: str
-
-    # Generate dataset with possible combinations
-    generate_set.main()
-
-    with open('./combinations.json', 'r') as json_io:
-        json_string = json_io.read()
-
-    return json.loads(json_string)
-
-
-def get_guess(possible_combinations: Json) -> typing.List[int]:
+def get_guess(possible_combinations: init.Json) -> typing.List[int]:
     """Choose a random item from possible_combinations.
 
     :param possible_combinations: A sequence of possible combinations.
@@ -77,7 +49,7 @@ def get_guess(possible_combinations: Json) -> typing.List[int]:
     return random.choice(possible_combinations)
 
 
-def reduce(possible_combinations: Json, guess: game.Code, score: typing.Tuple[int, int]) -> Json:
+def reduce(possible_combinations: init.Json, guess: game.Code, score: typing.Tuple[int, int]) -> init.Json:
     """Compares the score of all combinations in possible_combinations against the given score.
 
     :param possible_combinations: A list of possible combinations.
