@@ -10,4 +10,5 @@ by running a module in `algorithm/`. There are no dependencies.
 
 ## Frontend
 
-Has not been added yet.
+Has not been added yet. The only worthwhile things to check out can be found in `lib/python/`. The rest is all
+automatically generated boilerplate.
