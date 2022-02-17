@@ -70,7 +70,6 @@ def compare_codes(secret: Code, to_compare: Code) -> typing.Tuple[int, int]:
     """
     correct_order: int = 0
     incorrect_order: int = 0
-    correctness: typing.List[str] = []
     # Counter here is used to create a dictionary-like object with the frequency of every colour.
     frequencies: typing.List[typing.Counter] = [
         collections.Counter(secret),
