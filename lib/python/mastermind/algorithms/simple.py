@@ -65,7 +65,7 @@ def get_combinations() -> Json:
     with open('./combinations.json', 'r') as json_io:
         json_string = json_io.read()
 
-    return set(json.loads(json_string))
+    return json.loads(json_string)
 
 
 def get_guess(possible_combinations: Json) -> typing.List[int]:
