@@ -29,6 +29,7 @@ def main() -> None:
 
         guess = get_guess(possible_combinations)
         answer = game_simulation.send(guess)
+        print(f"Guessed: {guess}; answer: {answer}")
 
         # Check if the game is won
         if answer[2]:
