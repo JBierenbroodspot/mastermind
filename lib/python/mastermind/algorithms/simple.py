@@ -35,7 +35,7 @@ def main() -> None:
             print(f'Game won in {game_round + 1} guesses!')
             break
 
-        possible_combinations = reduce(possible_combinations, guess, answer[:2])
+        possible_combinations = init.reduce(possible_combinations, guess, answer[:2])
     else:
         print('Game lost.')
 
@@ -47,22 +47,6 @@ def get_guess(possible_combinations: init.Json) -> typing.List[int]:
     :return: A random item from possible_combinations.
     """
     return random.choice(possible_combinations)
-
-
-def reduce(possible_combinations: init.Json, guess: game.Code, score: typing.Tuple[int, int]) -> init.Json:
-    """Compares the score of all combinations in possible_combinations against the given score.
-
-    :param possible_combinations: A list of possible combinations.
-    :param guess: A sequence containing integers.
-    :param score: A tuple containing 2 integers.
-    :return: A list
-    """
-    # Using a list comprehension is absolutely useless here because game.compare_codes is a relatively expensive
-    # function. I just really like writing comprehensions.
-    return [
-        possible_combination for possible_combination in possible_combinations
-        if score == game.compare_codes(guess, possible_combination)
-    ]
 
 
 if __name__ == "__main__":
