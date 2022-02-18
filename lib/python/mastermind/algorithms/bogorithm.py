@@ -3,7 +3,9 @@
 #  Copyright (c) 2022 Jimmy Bierenbroodspot.                                                                           -
 # ----------------------------------------------------------------------------------------------------------------------
 """A mastermind algorithm that tries to use the fundamentals of bogosort to solve a game of mastermind. It pops a random
-combination from the pool of possible combinations and checks if it is the correct code, then repeats."""
+combination from the pool of possible combinations and checks if it is the correct code, then repeats. This is obviously
+horrifically inefficient and that's why the game length has been set to the maximum amount of combinations since this
+algorithm rarely finds the answer below 100 guesses."""
 import typing
 import random
 
