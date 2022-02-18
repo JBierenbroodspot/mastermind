@@ -122,7 +122,7 @@ def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: i
         # Here input is taken from the user. The string is then made uppercase, whitespaces are removed, and it is split
         # by the delimiter ','. Then maps this list with int (mapping applies a function to every item in an iterable
         # and in this case int is the function) which is converted to a tuple.
-        code = tuple(map(int, input(message).upper().replace(' ', '').split(',')))
+        code = tuple(map(int, list(input(message).upper().replace(' ', ''))))
         if len(code) == code_length:
             # all() will return True if everything within its parameter is also True.
             if all((colour in colours) for colour in code):
