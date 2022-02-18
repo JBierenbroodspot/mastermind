@@ -139,6 +139,17 @@ def simulate_game(colours: typing.Tuple[int, ...],
     :param game_length: Amount of rounds.
     :param board_width: Width of the board.
     :return: The amount of correct positions, correct colour but incorrect position and whether the game is won or not.
+
+    :example:
+    game_simulation = simulate_game(colours, length, board_width)
+    for _ in game_simulation:
+        guess = [0, 0, 1, 2]
+        answer = game_simulation.send(guess)  # Send the guess to the generator and store the answer at the same time
+
+        if answer[2]:  # If the third value is True the game has been won.
+            print('game is won!')
+    else:  # If the generator stops the game is lost.
+        print('game is lost!')
     """
     guess: Code
     won: bool
@@ -147,19 +158,24 @@ def simulate_game(colours: typing.Tuple[int, ...],
     logging.debug(f'Secret code is:\t{secret_code}')
 
     for _ in range(game_length):
+        # Whenever yield is to the right of an equal sign, and you call generator.send() it will assign that value to
+        # whatever is left of the equals sign.
         guess = yield
-
         logging.debug(f'Guessed code is:\t{guess}')
 
+        # Compares the guess against the secret code.
         correctness = compare_codes(secret_code, guess)
         won = is_won(correctness, board_width)
         logging.debug(f'{colours}\tCorrectness for this round:\t{correctness}')
 
+        # If won is True the last correctness is yielded and the generator is terminated.
         if won:
             logging.debug('Game is won')
             yield *correctness, won
             return
+        # If the game is not yet won the correctness and False is returned.
         yield *correctness, won
+    # If the loop runs out of iterations the game is lost.
     logging.debug('Game is lost')
 
 
