@@ -132,6 +132,7 @@ def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: i
     :return: A list containing a colour code.
     """
     colour: str
+    example_code: str
     code: Code = []
     is_correct = False
 
@@ -140,6 +141,14 @@ def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: i
         # Check if code consists of only allowed values and is of the correct length, all() returns True if all values
         # within are True.
         is_correct = all((colour in colours) for colour in code) and len(code) == code_length
+
+        # Ugly bit of code to improve feedback given to user. I would prefer not using print statements outside the main
+        # function but the way it is built makes that very hard.
+        if not is_correct:
+            # A quirky little way of showing the user what a proper code looks like
+            example_code = ''.join(map(str, random.choices(colours, k=code_length)))
+            print(f"Please enter a code of length {code_length} with these values: {colours},\n"
+                  f"for example: {example_code}")
     else:
         return code
 
