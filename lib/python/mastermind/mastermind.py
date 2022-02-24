@@ -5,8 +5,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 A game of mastermind designed to be as modular as possible. If this module is directly executed you can play a
-rudimentary game of mastermind in the terminal. You can enter your combination using comma-separated colour names. This
-way is clunky and low-effort since this is not the intended UI.
+rudimentary game of mastermind in the terminal. This way is clunky and low-effort since this is not the intended UI.
 """
 import typing
 import random
@@ -114,19 +113,32 @@ def get_user_input(colours: typing.Tuple[int, ...], message: str, code_length: i
     :param code_length: Expected seq_length of the code.
     :return: A list containing a colour code.
     """
-    code: Code
     colour: str
+    code: Code = []
+    is_correct = False
 
-    # This loop will continue until KeyboardInterrupt is thrown or a correct code has been entered.
-    while True:
-        # Here input is taken from the user. The string is then made uppercase, whitespaces are removed, and it is split
-        # by the delimiter ','. Then maps this list with int (mapping applies a function to every item in an iterable
-        # and in this case int is the function) which is converted to a tuple.
-        code = tuple(map(int, list(input(message).upper().replace(' ', ''))))
-        if len(code) == code_length:
-            # all() will return True if everything within its parameter is also True.
-            if all((colour in colours) for colour in code):
-                return code
+    while not is_correct:
+        code = clean_user_input(input(message))
+        # Check if code consists of only allowed values and is of the correct length, all() returns True if all values
+        # within are True.
+        is_correct = all((colour in colours) for colour in code) and len(code) == code_length
+    else:
+        return code
+
+
+def clean_user_input(user_input: str) -> Code:
+    """Turns a string into a tuple of int.
+
+    :param user_input: A string containing numeric characters.
+    :return: A Code list populated by integers if input is numeric, otherwise an empty list is returned.
+    """
+    cleaned_code: Code = []
+    user_input = user_input.replace(' ', '')  # Remove all whitespace.
+
+    if user_input.isnumeric():
+        cleaned_code = [int(character) for character in user_input]
+
+    return cleaned_code
 
 
 def simulate_game(colours: typing.Tuple[int, ...],
