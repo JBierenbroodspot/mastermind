@@ -5,7 +5,7 @@
 """
 Mastermind solving algorithm using L. Sterling's and E. Shapiro's simple algorithm.
 
-This code is developed using pseudocode found in the following book:
+This code is developed using code found in the following book:
 Sterling, L., & Shapiro, E. (1994). The art of Prolog: advanced programming techniques (2nd ed.). MIT Press.
 """
 from __future__ import annotations
