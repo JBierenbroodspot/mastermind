@@ -60,7 +60,8 @@ def _init_arguments() -> argparse.Namespace:
     parser.add_argument('--colours', '-c', help='Amount of possible colours, default 6', type=int, default=6)
     parser.add_argument('--length', '-l', help='Amount of rounds before lose condition, default 8', type=int, default=8)
     parser.add_argument('--width', '-w', help='Length of codes, default 4', type=int, default=4)
-    parser.add_argument('--debug', help='Enable or disable debugging, default False', type=bool, default=False)
+    parser.add_argument('--debug', help='Enables debugging', action='store_true')
+    parser.add_argument('--no_header', help='Disables the game header', action='store_true')
 
     return parser.parse_args()
 
@@ -226,7 +227,8 @@ def main() -> None:
     game_length = arguments.length
     game_width = arguments.width
 
-    print(GAME_HEADER)
+    if not arguments.no_header:
+        print(GAME_HEADER)
     # Simulate game
     game = simulate_game(colours, game_length, game_width)
     for _ in game:
