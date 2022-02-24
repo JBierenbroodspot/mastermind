@@ -16,6 +16,23 @@ import argparse
 
 Code: typing.Union[typing.Tuple[int, ...], typing.List[int]] = typing.TypeVar('Code')
 
+GAME_HEADER: str = """# ---------------------------------------------- MasterMind -------------------------------------\
+--------------------- #
+#                                                                                                                      #
+# How to play:                                                                                                         #
+#   The computer will randomly decide a secret code and you will have to crack that code. You enter a sequence of      #
+#   numbers and the computer will tell you how many numbers are the correct number in the right place and how many     #
+#   numbers are correct but in the wrong place.                                                                        #
+#                                                                                                                      #
+# How to customize:                                                                                                    #
+#   Run this module with the '--help' parameter to see how to customize the game rules.                                #
+#                                                                                                                      #
+# Note:                                                                                                                #
+#   For ease of use and extendability numbers are substituted for the colours in the original MasterMind game. This    #
+#   way you can submit a code by simply entering 0012 for example.                                                     #
+# -------------------------------------------------------------------------------------------------------------------- #
+"""
+
 
 def _init_logging() -> None:
     """Initializes logging by configuring logging and setting the logging location.
@@ -209,6 +226,7 @@ def main() -> None:
     game_length = arguments.length
     game_width = arguments.width
 
+    print(GAME_HEADER)
     # Simulate game
     game = simulate_game(colours, game_length, game_width)
     for _ in game:
