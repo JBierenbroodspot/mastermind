@@ -9,7 +9,6 @@ This code is developed using pseudocode found in the following book:
 Sterling, L., & Shapiro, E. (1994). The art of Prolog: advanced programming techniques (2nd ed.). MIT Press.
 """
 from __future__ import annotations
-import random
 import typing
 
 import lib.python.mastermind.mastermind as game
@@ -27,7 +26,7 @@ def main() -> None:
     for _ in game_simulation:
         game_round += 1
 
-        guess = get_guess(possible_combinations)
+        guess = possible_combinations[0]
         answer = game_simulation.send(guess)
         print(f"Guessed: {guess}; answer: {answer}")
 
@@ -39,15 +38,6 @@ def main() -> None:
         possible_combinations = init.reduce(possible_combinations, guess, answer[:2])
     else:
         print('Game lost.')
-
-
-def get_guess(possible_combinations: init.Json) -> typing.List[int]:
-    """Choose a random item from possible_combinations.
-
-    :param possible_combinations: A sequence of possible combinations.
-    :return: A random item from possible_combinations.
-    """
-    return random.choice(possible_combinations)
 
 
 if __name__ == "__main__":
