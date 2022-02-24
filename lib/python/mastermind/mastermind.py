@@ -241,8 +241,9 @@ def main() -> None:
     # Simulate game
     game = simulate_game(colours, game_length, game_width)
     for _ in game:
-        game_round = game.send(get_user_input(colours, 'Choose colours.\n>>\t', game_width))
-        print(game_round[:2])
+        game_round = game.send(get_user_input(colours, 'Enter your code:\n>>\t', game_width))
+        print(f"{game_round[0]} numbers are in the correct in a correct position and\n"
+              f"{game_round[1]} are correct in an incorrect position.\n")
 
     if game_round[2]:
         print('Congratulations, you won!')
