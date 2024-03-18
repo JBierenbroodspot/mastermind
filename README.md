@@ -4,11 +4,6 @@ A game of mastermind against the computer utilizing a number of different algori
 
 ## Backend
 
-The game of Mastermind and the algorithms are written in Python and can be found in `lib/python/mastermind`. Run 
+The game of Mastermind and the algorithms are written in Python and can be found in `src/`. Run 
 `mastermind.py` for a (very minimalistic and computer optimized) game of Mastermind. You can run each algorithm simply
-by running a module in `algorithm/`. There are no dependencies.
-
-## Frontend
-
-Has not been added yet. The only worthwhile things to check out can be found in `lib/python/`. The rest is all
-automatically generated boilerplate.
+by running a module in `src/algorithm/`. There are no dependencies.
